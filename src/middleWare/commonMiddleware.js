@@ -1,4 +1,5 @@
 const jwt=require("jsonwebtoken")
+const userModel=require("../models/userModel")
 const authToken=function(req,res,next){
 
     let token = req.headers["x-Auth-token"];
@@ -9,11 +10,6 @@ const authToken=function(req,res,next){
 
   console.log(token);
   
-  // If a token is present then decode the token with verify function
-  // verify takes two inputs:
-  // Input 1 is the token to be decoded
-  // Input 2 is the same secret with which the token was generated
-  // Check the value of the decoded token yourself
   let decodedToken = jwt.verify(token, "functionup-thorium");
   if (!decodedToken)
     return res.send({ status: false, msg: "token is invalid" });
@@ -23,4 +19,17 @@ const authToken=function(req,res,next){
     }
 
 }
+
+
+const userExist= async function (req,res,next){
+
+    let userId = req.params.userId;
+  let userDetails = await userModel.findById(userId);
+  if (!userDetails)
+    return res.send({ status: false, msg: "No such user exists" });
+    else{
+        next()
+    }
+}
+module.exports.userExist=userExist
 module.exports.authToken=authToken
